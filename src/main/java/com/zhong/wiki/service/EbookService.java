@@ -5,6 +5,7 @@ import com.zhong.wiki.domain.EbookExample;
 import com.zhong.wiki.mapper.EbookMapper;
 import com.zhong.wiki.req.EbookReq;
 import com.zhong.wiki.resp.EbookResp;
+import com.zhong.wiki.util.CopyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,15 +34,19 @@ public class EbookService {
 
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
-        List<EbookResp> respList = new ArrayList<>();
+//        List<EbookResp> respList = new ArrayList<>();
+//        for (Ebook ebook : ebookList) {
+////            EbookResp ebookResp = new EbookResp();
+////            BeanUtils.copyProperties(ebook,ebookResp);
+//            // 对象复制
+//            EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);
+//            respList.add(ebookResp);
+//        }
 
-        for (Ebook ebook : ebookList) {
-            EbookResp ebookResp = new EbookResp();
-            BeanUtils.copyProperties(ebook,ebookResp);
-            respList.add(ebookResp);
-        }
+        // 列表复制
+        List<EbookResp> list = CopyUtil.copyList(ebookList, EbookResp.class);
 
-        return respList;
+        return list;
 
     }
 
