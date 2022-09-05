@@ -9,6 +9,7 @@ import com.zhong.wiki.util.CopyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,9 @@ public class EbookService {
         // 创建查询条件
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         // 模糊查询
-        criteria.andNameLike("%"+ req.getName() +"%");
-
+        if (!ObjectUtils.isEmpty(req.getName())){
+            criteria.andNameLike("%"+ req.getName() +"%");
+        }
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
 //        List<EbookResp> respList = new ArrayList<>();
@@ -47,8 +49,7 @@ public class EbookService {
         List<EbookResp> list = CopyUtil.copyList(ebookList, EbookResp.class);
 
         return list;
-
     }
 
-
 }
+
