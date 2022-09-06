@@ -7,6 +7,7 @@ import com.zhong.wiki.domain.EbookExample;
 import com.zhong.wiki.mapper.EbookMapper;
 import com.zhong.wiki.req.EbookReq;
 import com.zhong.wiki.resp.EbookResp;
+import com.zhong.wiki.resp.PageResp;
 import com.zhong.wiki.util.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class EbookService {
     @Autowired
     private EbookMapper ebookMapper;
 
-    public List<EbookResp> list(EbookReq req){
+    public PageResp<EbookResp> list(EbookReq req){
 
         EbookExample ebookExample = new EbookExample();
         // 创建查询条件
@@ -41,8 +42,9 @@ public class EbookService {
             criteria.andNameLike("%"+ req.getName() +"%");
         }
         // 查询第几页,每页几条
-        PageHelper.startPage(1,3);
+        PageHelper.startPage(req.getPage(),req.getSize());
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
+
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
         LOG.info("总行数: {}",pageInfo.getTotal());
         LOG.info("总页数: {}",pageInfo.getPages());
@@ -57,10 +59,18 @@ public class EbookService {
 //            respList.add(ebookResp);
 //        }
 
+
         // 列表复制
         List<EbookResp> list = CopyUtil.copyList(ebookList, EbookResp.class);
 
-        return list;
+        PageResp<EbookResp> pageResp = new PageResp<>();
+        pageResp.setTotal(pageInfo.getTotal());
+        pageResp.setList(list);
+
+
+
+
+        return pageResp;
     }
 
 }
