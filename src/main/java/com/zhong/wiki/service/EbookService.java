@@ -5,18 +5,17 @@ import com.github.pagehelper.PageInfo;
 import com.zhong.wiki.domain.Ebook;
 import com.zhong.wiki.domain.EbookExample;
 import com.zhong.wiki.mapper.EbookMapper;
-import com.zhong.wiki.req.EbookReq;
-import com.zhong.wiki.resp.EbookResp;
+import com.zhong.wiki.req.EbookQueryReq;
+import com.zhong.wiki.req.EbookSaveReq;
+import com.zhong.wiki.resp.EbookQueryResp;
 import com.zhong.wiki.resp.PageResp;
 import com.zhong.wiki.util.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +31,7 @@ public class EbookService {
     @Autowired
     private EbookMapper ebookMapper;
 
-    public PageResp<EbookResp> list(EbookReq req){
+    public PageResp<EbookQueryResp> list(EbookQueryReq req){
 
         EbookExample ebookExample = new EbookExample();
         // 创建查询条件
@@ -61,9 +60,9 @@ public class EbookService {
 
 
         // 列表复制
-        List<EbookResp> list = CopyUtil.copyList(ebookList, EbookResp.class);
+        List<EbookQueryResp> list = CopyUtil.copyList(ebookList, EbookQueryResp.class);
 
-        PageResp<EbookResp> pageResp = new PageResp<>();
+        PageResp<EbookQueryResp> pageResp = new PageResp<>();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(list);
 
@@ -72,6 +71,29 @@ public class EbookService {
 
         return pageResp;
     }
+
+
+   /**
+   * @param :
+   * @description : 保存
+    * 保存分新增保存和编辑保存，这里是编辑保存
+    *
+    * 判断是新增还是更新 一般是根据 request 这个参数里面的id有没有值，id 右值是更新，id没有值是新增
+   */
+   public void save (EbookSaveReq req){
+       // CopyUtil 可以将请求参数变成实体
+       Ebook ebook = CopyUtil.copy(req, Ebook.class);
+       if (ObjectUtils.isEmpty(req.getId())){
+           // 新增
+           ebookMapper.insert(ebook);
+       }else {
+           // 更新
+           ebookMapper.updateByPrimaryKey(ebook);
+       }
+   }
+
+
+
 
 }
 

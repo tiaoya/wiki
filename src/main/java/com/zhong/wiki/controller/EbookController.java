@@ -1,17 +1,13 @@
 package com.zhong.wiki.controller;
 
-import com.zhong.wiki.domain.Ebook;
-import com.zhong.wiki.req.EbookReq;
+import com.zhong.wiki.req.EbookQueryReq;
+import com.zhong.wiki.req.EbookSaveReq;
 import com.zhong.wiki.resp.CommonResp;
-import com.zhong.wiki.resp.EbookResp;
+import com.zhong.wiki.resp.EbookQueryResp;
 import com.zhong.wiki.resp.PageResp;
 import com.zhong.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author : zhong
@@ -25,14 +21,32 @@ public class EbookController {
     @Autowired
     private EbookService ebookService;
 
-   
 
+    /**
+    * @param :
+    * @description : 查询所有电子书数据
+    */
     @GetMapping("/list")
-    public CommonResp list(EbookReq req){
-        CommonResp<PageResp<EbookResp>> resp = new CommonResp();
-        PageResp<EbookResp> list =  ebookService.list(req);
+    public CommonResp list(EbookQueryReq req){
+        CommonResp<PageResp<EbookQueryResp>> resp = new CommonResp();
+        PageResp<EbookQueryResp> list =  ebookService.list(req);
         resp.setContent(list);
         return resp;
     }
+
+    /**
+    * @param :
+    * @description : 保存编辑
+     *
+     * @RequestBody 这个注解对应的就是json方式的(POST)提交，就像我们写这个ebook，
+     * 这个是用这个content-type是 application/json
+    */
+    @PostMapping("/save")
+    public CommonResp save(@RequestBody EbookSaveReq req){
+        CommonResp resp = new CommonResp();
+        ebookService.save(req);
+        return resp;
+    }
+
 
 }
