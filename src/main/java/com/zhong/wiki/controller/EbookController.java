@@ -9,6 +9,8 @@ import com.zhong.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * @author : zhong
  * @Description :
@@ -27,7 +29,7 @@ public class EbookController {
     * @description : 查询所有电子书数据
     */
     @GetMapping("/list")
-    public CommonResp list(EbookQueryReq req){
+    public CommonResp list(@Valid EbookQueryReq req){
         CommonResp<PageResp<EbookQueryResp>> resp = new CommonResp();
         PageResp<EbookQueryResp> list =  ebookService.list(req);
         resp.setContent(list);
@@ -42,11 +44,21 @@ public class EbookController {
      * 这个是用这个content-type是 application/json
     */
     @PostMapping("/save")
-    public CommonResp save(@RequestBody EbookSaveReq req){
+    public CommonResp save(@Valid @RequestBody EbookSaveReq req){
         CommonResp resp = new CommonResp();
         ebookService.save(req);
         return resp;
     }
 
+    /**
+    * @param :
+    * @description : 删除
+    */
+    @DeleteMapping("/delete/{id}")
+    public CommonResp delete(@PathVariable Long id){
+        CommonResp resp = new CommonResp();
+        ebookService.delete(id);
+        return resp;
+    }
 
 }

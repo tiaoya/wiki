@@ -96,6 +96,13 @@ public class EbookService {
        }
    }
 
+   /**
+   * @param :
+   * @description : 删除
+   */
+   public void delete(Long id){
+       ebookMapper.deleteByPrimaryKey(id);
+   }
 
 
 
