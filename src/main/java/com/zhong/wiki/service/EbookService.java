@@ -10,6 +10,7 @@ import com.zhong.wiki.req.EbookSaveReq;
 import com.zhong.wiki.resp.EbookQueryResp;
 import com.zhong.wiki.resp.PageResp;
 import com.zhong.wiki.util.CopyUtil;
+import com.zhong.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,10 @@ public class EbookService {
 
     @Autowired
     private EbookMapper ebookMapper;
+
+    @Autowired
+    private SnowFlake snowFlake;
+
 
     public PageResp<EbookQueryResp> list(EbookQueryReq req){
 
@@ -67,8 +72,6 @@ public class EbookService {
         pageResp.setList(list);
 
 
-
-
         return pageResp;
     }
 
@@ -84,7 +87,8 @@ public class EbookService {
        // CopyUtil 可以将请求参数变成实体
        Ebook ebook = CopyUtil.copy(req, Ebook.class);
        if (ObjectUtils.isEmpty(req.getId())){
-           // 新增
+           // 新增, 根据雪花算法生成下一个id
+           ebook.setId(snowFlake.nextId());
            ebookMapper.insert(ebook);
        }else {
            // 更新
