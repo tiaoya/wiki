@@ -93,6 +93,7 @@ public class EbookService {
        }else {
            // 更新
            ebookMapper.updateByPrimaryKey(ebook);
+
        }
    }
 
