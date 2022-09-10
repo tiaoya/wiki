@@ -112,42 +112,51 @@ export default defineComponent({
         }
       });
     };
+
     const isShowWelcome = ref(true);
+    let categoryId2 = 0;
+
+    const handleQueryEbook = () => {
+      axios.get( "/ebook/list",{
+        params:{
+          page:1,
+          size:1000,
+          categoryId2: categoryId2
+        }
+      }).then((response)=>{
+        const data =response.data;
+        ebooks.value = data.content.list;
+        // ebooks1.books = data.content;
+      });
+    }
+
     const handleClick = (value : any) =>{
       // console.log("menu click", value)
       if (value.key === 'welcome') {
         isShowWelcome.value = true;
       } else {
-        // categoryId2 = value.key;
+        categoryId2 = value.key;
         isShowWelcome.value = false;
-        // handleQueryEbook();
+        handleQueryEbook();
       }
+
       // isShowWelcome.value = value.key === 'welcome';
 
     };
 
 
-
     onMounted(()=>{
       handleQueryCategory();
-      axios.get( "/ebook/list",{
-        params:{
-          page:1,
-          size:1000
-        }
-      }).then((response)=>{
-      const data =response.data;
-      ebooks.value = data.content.list;
-      // ebooks1.books = data.content;
-      });
-
+      // handleQueryEbook();
     });
+
     const pagination = {
       onChange: (page: number) => {
         console.log(page);
       },
       pageSize: 3,
     };
+
     const actions: Record<string, string>[] = [
       { type: 'StarOutlined', text: '156' },
       { type: 'LikeOutlined', text: '156' },
