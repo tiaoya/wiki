@@ -193,6 +193,7 @@ export default defineComponent({
       ebook.value.category1Id = categoryIds.value[0];
       ebook.value.category2Id = categoryIds.value[1];
       axios.post("/ebook/save",ebook.value).then((response)=>{
+
         modalLoading.value = false;
         const data = response.data;
         if (data.success){
