@@ -77,6 +77,10 @@
       <a-form-item label="顺序">
         <a-input v-model:value="doc.sort" />
       </a-form-item>
+
+      <a-form-item label="内容">
+        <div id="content"></div>
+      </a-form-item>
     </a-form>
 
   </a-modal>
@@ -84,11 +88,13 @@
 
 <script lang="ts">
 // import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue';
-import { defineComponent,onMounted,ref } from 'vue';
+import { defineComponent,onMounted,ref, createVNode } from 'vue';
 import axios from 'axios';
-import { message } from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
 import {Tool} from "@/util/tool";
 import {useRoute} from "vue-router";
+import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
+import E from 'wangeditor';
 
 export default defineComponent({
   name:'AdminDoc',
@@ -179,6 +185,8 @@ export default defineComponent({
     const doc = ref({});
     const modalVisible = ref(false);
     const modalLoading = ref(false);
+    const editor = new E('#content');
+
     const handleModalOK= () => {
       modalLoading.value = true;
 
@@ -227,8 +235,8 @@ export default defineComponent({
       }
     };
 
-    const ids: Array<string> = [];
-    // const deleteNames: Array<string> = [];
+    const deleteIds: Array<string> = [];
+    const deleteNames: Array<string> = [];
     /**
      * 查找整根树枝
      */
@@ -242,8 +250,8 @@ export default defineComponent({
           console.log("delete", node);
           // 将目标ID放入结果集ids
           // node.disabled = true;
-          ids.push(id);
-          // deleteNames.push(node.name);
+          deleteIds.push(id);
+          deleteNames.push(node.name);
 
           // 遍历所有子节点
           const children = node.children;
@@ -274,6 +282,10 @@ export default defineComponent({
 
       // 为选择树添加一个"无"
       treeSelectData.value.unshift({id: 0, name: '无'});
+      // 因为创建表单比较慢,有可能 富文本创建了 表单都还没创建，所以在页面上显示不出来，增加延时
+      setTimeout(function (){
+        editor.create();
+      },100)
     }
 
     // 新增
@@ -287,17 +299,42 @@ export default defineComponent({
 
       // 为选择树添加一个"无"
       treeSelectData.value.unshift({id: 0, name: '无'});
+
+      // 因为创建表单比较慢,有可能 富文本创建了 表单都还没创建，所以在页面上显示不出来，增加延时
+      setTimeout(function (){
+        editor.create();
+      },100)
     }
 
     // 删除
     const handleDelete = (id:number) =>{
+      deleteIds.length = 0;
+      deleteNames.length = 0;
       getDeleteIds(level1.value,id);
-      axios.delete("/doc/delete/"+ids.join(",")).then((response)=>{
-        const data = response.data; // date = commonResp
-        if (data.success){
-          // 重新加载列表
-          handleQuery();
-        }
+      // axios.delete("/doc/delete/"+ids.join(",")).then((response)=>{
+      //   const data = response.data; // date = commonResp
+      //   if (data.success){
+      //     // 重新加载列表
+      //     handleQuery();
+      //   }
+      // });
+
+      Modal.confirm({
+        title: '重要提醒',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
+        onOk() {
+          // console.log(ids)
+          axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
+            const data = response.data; // data = commonResp
+            if (data.success) {
+              // 重新加载列表
+              handleQuery();
+            } else {
+              message.error(data.message);
+            }
+          });
+        },
       });
 
     };
