@@ -99,6 +99,7 @@ import {Tool} from "@/util/tool";
 
 export default defineComponent({
   name:'AdminEbook',
+
   setup() {
     const param = ref();
     param.value = {};
