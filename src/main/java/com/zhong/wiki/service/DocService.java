@@ -113,6 +113,20 @@ public class DocService {
        docMapper.deleteByPrimaryKey(id);
    }
 
+   /**
+   * @param :
+   * @description : 增加删除文档功能
+   */
+   public void delete(List<String> ids){
+       // 根据条件查询
+       DocExample docExample = new DocExample();
+       DocExample.Criteria criteria = docExample.createCriteria();
+       criteria.andIdIn(ids);
+       docMapper.deleteByExample(docExample);
+
+//       docMapper.deleteByPrimaryKey(id);
+   }
+
 
 
 }
