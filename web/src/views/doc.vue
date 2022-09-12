@@ -13,6 +13,7 @@
           </a-tree>
         </a-col>
         <a-col :span="18">
+          <div :innerHTML="html"></div>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -55,16 +56,16 @@ export default defineComponent({
     /**
      * 内容查询
      **/
-    // const handleQueryContent = (id: number) => {
-    //   axios.get("/doc/find-content/" + id).then((response) => {
-    //     const data = response.data;
-    //     if (data.success) {
-    //       html.value = data.content;
-    //     } else {
-    //       message.error(data.message);
-    //     }
-    //   });
-    // };
+    const handleQueryContent = (id: number) => {
+      axios.get("/doc/find-content/" + id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          html.value = data.content;
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
 
     /**
      * 数据查询
@@ -96,7 +97,7 @@ export default defineComponent({
         // 选中某一节点时，加载该节点的文档信息
         doc.value = info.selectedNodes[0].props;
         // 加载内容
-        // handleQueryContent(selectedKeys[0]);
+        handleQueryContent(selectedKeys[0]);
       }
     };
 
@@ -118,8 +119,8 @@ export default defineComponent({
 
     return {
       level1,
-      // html,
-      // onSelect,
+      html,
+      onSelect,
       // defaultSelectedKeys,
       // doc,
       // vote
