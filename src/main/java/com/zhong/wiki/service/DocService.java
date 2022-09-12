@@ -40,11 +40,13 @@ public class DocService {
     @Autowired
     private SnowFlake snowFlake;
 
-    public List<DocQueryResp> all(){
+    public List<DocQueryResp> all(Long ebookId){
         DocExample docExample = new DocExample();
+        docExample.createCriteria().andEbookIdEqualTo(ebookId);
         // 设置排序
         docExample.setOrderByClause("sort asc");
         List<Doc> docList = docMapper.selectByExample(docExample);
+
         // 列表复制
         List<DocQueryResp> list = CopyUtil.copyList(docList, DocQueryResp.class);
 
