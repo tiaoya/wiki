@@ -3,87 +3,102 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <p>
-        <a-form layout="inline" :model="param">
-          <a-form-item>
-            <a-button type="primary" @click="handleQuery()">
-              查询
-            </a-button>
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" @click="add()">
-              新增
-            </a-button>
-          </a-form-item>
-        </a-form>
-      </p>
+      <a-row :gutter="24">
+        <a-col :span="8">
+          <p>
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleQuery()">
+                  查询
+                </a-button>
+              </a-form-item>
+              <a-form-item>
+                <a-button type="primary" @click="add()">
+                  新增
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
+          <a-table
+              v-if="level1.length > 0"
+              :columns="columns"
+              :row-key="record => record.id"
+              :data-source="level1"
+              :loading="loading"
+              :pagination="false"
+              size = "small"
+              :defaultExpandAllRows="true"
+          >
+            <template #name="{ text,record }">
+              {{record.sort}} {{text}}
+            </template>
+            <template v-slot:action="{text,record}">
+              <a-space size="small">
+                <a-button type="primary" @click="edit(record)" size="small">
+                  编辑
+                </a-button>
+                <a-popconfirm
+                    title="删除后不可恢复,确认删除"
+                    ok-text="是"
+                    cancel-text="否"
+                    @confirm = "handleDelete(record.id)"
+                >
+                  <a-button type="danger" size="small">
+                    删除
+                  </a-button>
+                </a-popconfirm>
+              </a-space>
+            </template>
+          </a-table>
+        </a-col>
+        <a-col :span="16">
+          <p>
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleSave">
+                  保存
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
+          <a-form :model="doc" layout="vertical">
 
-      <a-table
-          :columns="columns"
-          :row-key="record => record.id"
-          :data-source="level1"
-          :loading="loading"
-          :pagination="false"
-      >
-        <template #cover="{ text:cover }">
-          <img v-if="cover" :src="cover" alt="avatar" style="width:95px;height:95px">
-        </template>
-        <template v-slot:action="{text,record}">
-         <a-space size="small">
-           <a-button type="primary" @click="edit(record)">
-             编辑
-           </a-button>
-           <a-popconfirm
-              title="删除后不可恢复,确认删除"
-              ok-text="是"
-              cancel-text="否"
-              @confirm = "handleDelete(record.id)"
-           >
-             <a-button type="danger">
-               删除
-             </a-button>
-           </a-popconfirm>
-         </a-space>
-        </template>
-      </a-table>
+            <a-form-item>
+              <a-input v-model:value="doc.name" placeholder="名称" />
+            </a-form-item>
+
+            <a-form-item>
+              <a-tree-select
+                  v-model:value="doc.parent"
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                  :tree-data="treeSelectData"
+                  placeholder="请选择父文档"
+                  tree-default-expand-all
+                  :replaceFields="{title: 'name', key: 'id', value: 'id'}"
+              >
+              </a-tree-select>
+            </a-form-item>
+
+            <a-form-item>
+              <a-input v-model:value="doc.sort" placeholder="顺序"/>
+            </a-form-item>
+            <a-form-item label="内容">
+              <div id="content"></div>
+            </a-form-item>
+          </a-form>
+        </a-col>
+      </a-row>
     </a-layout-content>
   </a-layout>
 
-  <a-modal
-      title="文档表单"
-      v-model:visible = "modalVisible"
-      :confirm-loading="modalLoading"
-      @ok="handleModalOK"
-  >
-    <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{span: 18}">
-
-      <a-form-item label="名称">
-        <a-input v-model:value="doc.name"/>
-      </a-form-item>
-
-      <a-form-item label="父文档">
-        <a-tree-select
-            v-model:value="doc.parent"
-            style="width: 100%"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            :tree-data="treeSelectData"
-            placeholder="请选择父文档"
-            tree-default-expand-all
-            :replaceFields="{title: 'name', key: 'id', value: 'id'}"
-        >
-        </a-tree-select>
-      </a-form-item>
-
-      <a-form-item label="顺序">
-        <a-input v-model:value="doc.sort" />
-      </a-form-item>
-
-      <a-form-item label="内容">
-        <div id="content"></div>
-      </a-form-item>
-    </a-form>
-
-  </a-modal>
+<!--  <a-modal-->
+<!--      title="文档表单"-->
+<!--      v-model:visible = "modalVisible"-->
+<!--      :confirm-loading="modalLoading"-->
+<!--      @ok="handleModalOK"-->
+<!--  >-->
+<!--  </a-modal>-->
 </template>
 
 <script lang="ts">
@@ -117,15 +132,7 @@ export default defineComponent({
     {
       title: '名称',
       dataIndex: 'name',
-    },
-    {
-      title: '父文档',
-      key:'parent',
-      dataIndex: 'parent',
-    },
-    {
-      title: '顺序',
-      dataIndex: 'sort'
+      slots: { customRender: 'name' }
     },
     {
       title: 'Action',
@@ -148,7 +155,7 @@ export default defineComponent({
      */
 
     const level1 = ref(); // 一级文档树，children属性就是二级文档
-    // level1.value = [];
+    level1.value = [];
 
 
 
@@ -186,8 +193,10 @@ export default defineComponent({
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const editor = new E('#content');
+    // zIndex 覆盖层级的大小
+    editor.config.zIndex = 0;
 
-    const handleModalOK= () => {
+    const handleSave= () => {
       modalLoading.value = true;
 
       axios.post("/doc/save",doc.value).then((response)=>{
@@ -237,6 +246,7 @@ export default defineComponent({
 
     const deleteIds: Array<string> = [];
     const deleteNames: Array<string> = [];
+
     /**
      * 查找整根树枝
      */
@@ -283,9 +293,9 @@ export default defineComponent({
       // 为选择树添加一个"无"
       treeSelectData.value.unshift({id: 0, name: '无'});
       // 因为创建表单比较慢,有可能 富文本创建了 表单都还没创建，所以在页面上显示不出来，增加延时
-      setTimeout(function (){
-        editor.create();
-      },100)
+      // setTimeout(function (){
+      //   editor.create();
+      // },100)
     }
 
     // 新增
@@ -301,9 +311,9 @@ export default defineComponent({
       treeSelectData.value.unshift({id: 0, name: '无'});
 
       // 因为创建表单比较慢,有可能 富文本创建了 表单都还没创建，所以在页面上显示不出来，增加延时
-      setTimeout(function (){
-        editor.create();
-      },100)
+      // setTimeout(function (){
+      //   editor.create();
+      // },100)
     }
 
     // 删除
@@ -311,6 +321,7 @@ export default defineComponent({
       deleteIds.length = 0;
       deleteNames.length = 0;
       getDeleteIds(level1.value,id);
+
       // axios.delete("/doc/delete/"+ids.join(",")).then((response)=>{
       //   const data = response.data; // date = commonResp
       //   if (data.success){
@@ -323,6 +334,7 @@ export default defineComponent({
         title: '重要提醒',
         icon: createVNode(ExclamationCircleOutlined),
         content: '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
+
         onOk() {
           // console.log(ids)
           axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
@@ -341,6 +353,8 @@ export default defineComponent({
 
     onMounted(() => {
       handleQuery();
+
+      editor.create();
     });
 
     return{
@@ -358,7 +372,8 @@ export default defineComponent({
       doc,
       modalVisible,
       modalLoading,
-      handleModalOK,
+
+      handleSave,
       handleDelete,
 
       treeSelectData,
