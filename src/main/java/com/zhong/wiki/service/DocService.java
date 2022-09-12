@@ -2,8 +2,10 @@ package com.zhong.wiki.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhong.wiki.domain.Content;
 import com.zhong.wiki.domain.Doc;
 import com.zhong.wiki.domain.DocExample;
+import com.zhong.wiki.mapper.ContentMapper;
 import com.zhong.wiki.mapper.DocMapper;
 import com.zhong.wiki.req.DocQueryReq;
 import com.zhong.wiki.req.DocSaveReq;
@@ -31,6 +33,9 @@ public class DocService {
 
     @Autowired
     private DocMapper docMapper;
+
+    @Autowired
+    private ContentMapper contentMapper;
 
     @Autowired
     private SnowFlake snowFlake;
@@ -95,13 +100,25 @@ public class DocService {
    public void save (DocSaveReq req){
        // CopyUtil 可以将请求参数变成实体
        Doc doc = CopyUtil.copy(req, Doc.class);
+       Content content = CopyUtil.copy(req, Content.class);
        if (ObjectUtils.isEmpty(req.getId())){
            // 新增, 根据雪花算法生成下一个id
            doc.setId(snowFlake.nextId());
            docMapper.insert(doc);
+
+           // 保存富文本内容 , 向数据库插入内容
+           content.setId(doc.getId());
+           contentMapper.insert(content);
        }else {
            // 更新
            docMapper.updateByPrimaryKey(doc);
+
+           // 更新富文本内容  BLOB代表富文本字段,这是一个大字段
+           int count = contentMapper.updateByPrimaryKeyWithBLOBs(content);
+           // 要么更新，如果没有就插入
+           if (count == 0){
+               contentMapper.insert(content);
+           }
        }
    }
 
@@ -126,6 +143,19 @@ public class DocService {
 
 //       docMapper.deleteByPrimaryKey(id);
    }
+
+   /**
+   * @param :
+   * @description : 根据id查询内容
+   */
+   public String findContent(Long id){
+       Content content = contentMapper.selectByPrimaryKey(id);
+       if (content != null){
+           return content.getContent();
+       }
+        return null;
+   }
+
 
 
 

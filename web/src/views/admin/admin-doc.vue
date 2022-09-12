@@ -189,7 +189,8 @@ export default defineComponent({
     // 因为树选择组件的属性状态,会随当前编辑的节点而变化,所有单独声明一个响应式变量
     const treeSelectData = ref();
     treeSelectData.value = [];
-    const doc = ref({});
+    const doc = ref();
+    doc.value ={};
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const editor = new E('#content');
@@ -198,7 +199,8 @@ export default defineComponent({
 
     const handleSave= () => {
       modalLoading.value = true;
-
+      doc.value.content = editor.txt.html();
+      console.log(doc.value+"===================================");
       axios.post("/doc/save",doc.value).then((response)=>{
         modalLoading.value = false;
         const data = response.data;
@@ -280,11 +282,23 @@ export default defineComponent({
       }
     };
 
+    // 内容查询
+    const handleQueryContent = () =>{
+      axios.get("/doc/find-content/" + doc.value.id).then((response) =>{
+        const data = response.data;
+        if (data.success){
+          editor.txt.html(data.content)
+        }else {
+          message.error(data.message);
+        }
+      })
+    }
 
     // 编辑
     const edit = (record:any) =>{
       modalVisible.value = true;
       doc.value = Tool.copy(record);
+      handleQueryContent();
 
       // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
       treeSelectData.value = Tool.copy(level1.value);

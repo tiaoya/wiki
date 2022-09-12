@@ -1,7 +1,11 @@
 package com.zhong.wiki.req;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.validation.constraints.NotNull;
 
+// 解决JSON解析错误：无法识别的字段某个新增的字段
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DocSaveReq {
     private Long id;
 
@@ -21,8 +25,33 @@ public class DocSaveReq {
 
     private Integer voteCount;
 
+    @NotNull(message = "【内容】不能为空")
+    private String content;
+
+    @Override
+    public String toString() {
+        return "DocSaveReq{" +
+                "id=" + id +
+                ", ebookId=" + ebookId +
+                ", parent=" + parent +
+                ", name='" + name + '\'' +
+                ", sort=" + sort +
+                ", viewCount=" + viewCount +
+                ", voteCount=" + voteCount +
+                ", content='" + content + '\'' +
+                '}';
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public void setId(Long id) {
@@ -77,20 +106,4 @@ public class DocSaveReq {
         this.voteCount = voteCount;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", ebookId=").append(ebookId);
-        sb.append(", parent=").append(parent);
-        sb.append(", name=").append(name);
-        sb.append(", sort=").append(sort);
-        sb.append(", viewCount=").append(viewCount);
-        sb.append(", voteCount=").append(voteCount);
-        sb.append("]");
-        return sb.toString();
-    }
 }
