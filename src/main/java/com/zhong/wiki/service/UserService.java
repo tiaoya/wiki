@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhong.wiki.domain.User;
 import com.zhong.wiki.domain.UserExample;
+import com.zhong.wiki.exception.BusinessException;
+import com.zhong.wiki.exception.BusinessExceptionCode;
 import com.zhong.wiki.mapper.UserMapper;
 import com.zhong.wiki.req.UserQueryReq;
 import com.zhong.wiki.req.UserSaveReq;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -89,9 +92,17 @@ public class UserService {
        // CopyUtil 可以将请求参数变成实体
        User user = CopyUtil.copy(req, User.class);
        if (ObjectUtils.isEmpty(req.getId())){
-           // 新增, 根据雪花算法生成下一个id
-           user.setId(snowFlake.nextId());
-           userMapper.insert(user);
+           // 表示从数据库里查询出来的
+           User userDB = selectByLoginName(req.getLoginName());
+           if (ObjectUtils.isEmpty(userDB)){
+               // 新增, 根据雪花算法生成下一个id
+               user.setId(snowFlake.nextId());
+               userMapper.insert(user);
+           }else {
+                // 用户名已经存在, 抛出自定义异常
+                    throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+           }
+
        }else {
            // 更新
            userMapper.updateByPrimaryKeySelective(user);
@@ -107,6 +118,22 @@ public class UserService {
        userMapper.deleteByPrimaryKey(id);
    }
 
+   /**
+   * @param :
+   * @description : 查询数据库里的用户名名称,我们要校验用户名不重复且唯一
+   */
+   public User selectByLoginName(String loginName){
+       UserExample userExample = new UserExample();
+       // 创建查询条件
+       UserExample.Criteria criteria = userExample.createCriteria();
+       criteria.andLoginNameEqualTo(loginName);
+       List<User> userList = userMapper.selectByExample(userExample);
+       if (CollectionUtils.isEmpty(userList)){
+           return null;
+       }else {
+         return   userList.get(0);
+       }
+   }
 
 
 }
