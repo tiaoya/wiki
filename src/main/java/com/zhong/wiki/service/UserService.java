@@ -100,11 +100,12 @@ public class UserService {
                userMapper.insert(user);
            }else {
                 // 用户名已经存在, 抛出自定义异常
-                    throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
            }
 
        }else {
            // 更新
+           user.setLoginName(null);
            userMapper.updateByPrimaryKeySelective(user);
 
        }
