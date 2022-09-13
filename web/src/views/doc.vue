@@ -9,6 +9,7 @@
               @select="onSelect"
               :replaceFields="{title: 'name', key: 'id', value: 'id'}"
               :defaultExpandAll="true"
+              :defaultSelectedKeys="defaultSelectedKeys"
           >
           </a-tree>
         </a-col>
@@ -33,8 +34,8 @@ export default defineComponent({
     const route = useRoute();
     const docs = ref();
     const html = ref();
-    // const defaultSelectedKeys = ref();
-    // defaultSelectedKeys.value = [];
+    const defaultSelectedKeys = ref();
+    defaultSelectedKeys.value = [];
     // 当前选中的文档
     const doc = ref();
     doc.value = {};
@@ -79,12 +80,14 @@ export default defineComponent({
           level1.value = [];
           level1.value = Tool.array2Tree(docs.value, 0);
 
-          // if (Tool.isNotEmpty(level1)) {
-          //   defaultSelectedKeys.value = [level1.value[0].id];
-          //   handleQueryContent(level1.value[0].id);
-          //   // 初始显示文档信息
-          //   doc.value = level1.value[0];
-          // }
+          if (Tool.isNotEmpty(level1)) {
+            // 第一步设置成选中状态
+            defaultSelectedKeys.value = [level1.value[0].id];
+            // 根据节点的id查询内容
+            handleQueryContent(level1.value[0].id);
+            // 初始显示文档信息
+            // doc.value = level1.value[0];
+          }
         } else {
           message.error(data.message);
         }
@@ -121,7 +124,7 @@ export default defineComponent({
       level1,
       html,
       onSelect,
-      // defaultSelectedKeys,
+      defaultSelectedKeys,
       // doc,
       // vote
     }
@@ -130,6 +133,8 @@ export default defineComponent({
 </script>
 
 <style>
+
+/* 所有的页面都能读到这个样式 */
   /* wangeditor默认样式, 参照: http://www.wangeditor.com/doc/pages/02-%E5%86%85%E5%AE%B9%E5%A4%84%E7%90%86/03-%E8%8E%B7%E5%8F%96html.html */
   /* table 样式 */
 .wangeditor table {
