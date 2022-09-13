@@ -88,6 +88,9 @@
                 <EyeOutlined /> 内容预览
               </a-button>
             </a-form-item>
+            <a-form-item>
+              <div id="content"></div>
+            </a-form-item>
           </a-form>
         </a-col>
       </a-row>
@@ -95,7 +98,6 @@
       <a-drawer width="900" placement="right" :closable="false" :visible="drawerVisible" @close="onDrawerClose">
         <div class="wangeditor" :innerHTML="previewHtml"></div>
       </a-drawer>
-
 
     </a-layout-content>
   </a-layout>
@@ -209,13 +211,14 @@ export default defineComponent({
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const editor = new E('#content');
+
     // zIndex 覆盖层级的大小
     editor.config.zIndex = 0;
 
     const handleSave= () => {
       modalLoading.value = true;
       doc.value.content = editor.txt.html();
-      console.log(doc.value+"===================================");
+      // console.log(doc.value+"===================================");
       axios.post("/doc/save",doc.value).then((response)=>{
         modalLoading.value = false;
         const data = response.data;
@@ -392,6 +395,7 @@ export default defineComponent({
       previewHtml.value = html;
       drawerVisible.value = true;
     };
+
     const onDrawerClose = () => {
       drawerVisible.value = false;
     };
@@ -424,9 +428,9 @@ export default defineComponent({
       handleDelete,
 
       treeSelectData,
-      handlePreviewContent,
       drawerVisible,
       previewHtml,
+      handlePreviewContent,
       onDrawerClose,
     }
   }

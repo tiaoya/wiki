@@ -87,7 +87,7 @@ export default defineComponent({
             // 根据节点的id查询内容
             handleQueryContent(level1.value[0].id);
             // 初始显示文档信息
-            // doc.value = level1.value[0];
+            doc.value = level1.value[0];
           }
         } else {
           message.error(data.message);
@@ -119,6 +119,7 @@ export default defineComponent({
 
     onMounted(() => {
       handleQuery();
+
     });
 
     return {
