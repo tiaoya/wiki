@@ -1,6 +1,7 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
+      <h3 v-if="level1.length === 0">对不起，找不到相关文档！</h3>
       <a-row>
         <a-col :span="6">
           <a-tree
@@ -98,7 +99,7 @@ export default defineComponent({
       console.log('selected', selectedKeys, info);
       if (Tool.isNotEmpty(selectedKeys)) {
         // 选中某一节点时，加载该节点的文档信息
-        // doc.value = info.selectedNodes[0].props;
+        doc.value = info.selectedNodes[0].props;
         // 加载内容
         handleQueryContent(selectedKeys[0]);
       }
