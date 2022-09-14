@@ -7,6 +7,7 @@ import com.zhong.wiki.resp.UserQueryResp;
 import com.zhong.wiki.resp.PageResp;
 import com.zhong.wiki.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -45,6 +46,9 @@ public class UserController {
     */
     @PostMapping("/save")
     public CommonResp save(@Valid @RequestBody UserSaveReq req){
+        // 第二次数据加密
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+
         CommonResp resp = new CommonResp();
         userService.save(req);
         return resp;

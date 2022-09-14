@@ -82,6 +82,8 @@ import axios from 'axios';
 import { message } from 'ant-design-vue';
 import {Tool} from "@/util/tool";
 
+declare let hexMd5 :any;
+declare let KEY :any;
 
 export default defineComponent({
   name:'AdminUser',
@@ -169,6 +171,10 @@ export default defineComponent({
 
     const handleModalOK= () => {
       modalLoading.value = true;
+
+      // 第一次加密,确保在第一次传输密码时是密文,不易被人截取
+      // hexMd5 和 KEY 是从 public/js/md5.js 里定义的,在 public/index.html 里引用
+      user.value.password = hexMd5(user.value.password+KEY);
 
       axios.post("/user/save",user.value).then((response)=>{
 

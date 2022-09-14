@@ -99,6 +99,7 @@ public class UserService {
                user.setId(snowFlake.nextId());
                userMapper.insert(user);
            }else {
+
                 // 用户名已经存在, 抛出自定义异常
                 throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
            }
