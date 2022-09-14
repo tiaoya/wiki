@@ -8,6 +8,7 @@ import com.zhong.wiki.exception.BusinessException;
 import com.zhong.wiki.exception.BusinessExceptionCode;
 import com.zhong.wiki.mapper.UserMapper;
 import com.zhong.wiki.req.UserQueryReq;
+import com.zhong.wiki.req.UserResetPasswordReq;
 import com.zhong.wiki.req.UserSaveReq;
 import com.zhong.wiki.resp.UserQueryResp;
 import com.zhong.wiki.resp.PageResp;
@@ -107,6 +108,7 @@ public class UserService {
        }else {
            // 更新
            user.setLoginName(null);
+           user.setPassword(null);
            userMapper.updateByPrimaryKeySelective(user);
 
        }
@@ -137,6 +139,16 @@ public class UserService {
        }
    }
 
+
+   /**
+   * @param :
+   * @description : 重置(修改)密码
+   */
+   public void resetPassword(UserResetPasswordReq req){
+       User user = CopyUtil.copy(req, User.class);
+       userMapper.updateByPrimaryKeySelective(user);
+
+   }
 
 }
 

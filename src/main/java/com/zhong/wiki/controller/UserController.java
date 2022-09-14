@@ -1,6 +1,7 @@
 package com.zhong.wiki.controller;
 
 import com.zhong.wiki.req.UserQueryReq;
+import com.zhong.wiki.req.UserResetPasswordReq;
 import com.zhong.wiki.req.UserSaveReq;
 import com.zhong.wiki.resp.CommonResp;
 import com.zhong.wiki.resp.UserQueryResp;
@@ -64,5 +65,15 @@ public class UserController {
         userService.delete(id);
         return resp;
     }
+
+
+    @PostMapping("/reset-password")
+    public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req){
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp resp = new CommonResp();
+        userService.resetPassword(req);
+        return resp;
+    }
+
 
 }
