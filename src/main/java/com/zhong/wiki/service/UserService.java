@@ -7,9 +7,11 @@ import com.zhong.wiki.domain.UserExample;
 import com.zhong.wiki.exception.BusinessException;
 import com.zhong.wiki.exception.BusinessExceptionCode;
 import com.zhong.wiki.mapper.UserMapper;
+import com.zhong.wiki.req.UserLoginReq;
 import com.zhong.wiki.req.UserQueryReq;
 import com.zhong.wiki.req.UserResetPasswordReq;
 import com.zhong.wiki.req.UserSaveReq;
+import com.zhong.wiki.resp.UserLoginResp;
 import com.zhong.wiki.resp.UserQueryResp;
 import com.zhong.wiki.resp.PageResp;
 import com.zhong.wiki.util.CopyUtil;
@@ -149,6 +151,35 @@ public class UserService {
        userMapper.updateByPrimaryKeySelective(user);
 
    }
+
+   /**
+   * @param :
+   * @description : 登录
+   */
+   public UserLoginResp login(UserLoginReq req){
+       // userDb 代表这个对象是我们从数据库里查询出来的
+       User userDb = selectByLoginName(req.getLoginName());
+       // 判空
+       if (ObjectUtils.isEmpty(userDb)){
+           // 用户名不存在
+           LOG.info("用户名不存在, {}", req.getLoginName());
+           throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+       }else {
+           // 用户名存在,校验密码
+           if (userDb.getPassword().equals(req.getPassword())){
+               // 登录成功
+               UserLoginResp userLoginResp = CopyUtil.copy(userDb, UserLoginResp.class);
+               return userLoginResp;
+           }else {
+               // 密码不对
+               LOG.info("密码不对, 输入密码：{}, 数据库密码：{}", req.getPassword(), userDb.getPassword());
+               throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+           }
+       }
+
+   }
+
+
 
 }
 

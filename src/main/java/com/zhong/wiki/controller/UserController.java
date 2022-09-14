@@ -1,9 +1,11 @@
 package com.zhong.wiki.controller;
 
+import com.zhong.wiki.req.UserLoginReq;
 import com.zhong.wiki.req.UserQueryReq;
 import com.zhong.wiki.req.UserResetPasswordReq;
 import com.zhong.wiki.req.UserSaveReq;
 import com.zhong.wiki.resp.CommonResp;
+import com.zhong.wiki.resp.UserLoginResp;
 import com.zhong.wiki.resp.UserQueryResp;
 import com.zhong.wiki.resp.PageResp;
 import com.zhong.wiki.service.UserService;
@@ -72,6 +74,16 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp resp = new CommonResp();
         userService.resetPassword(req);
+        return resp;
+    }
+
+   @PostMapping("/login")
+    public CommonResp login(@Valid @RequestBody UserLoginReq req){
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp<UserLoginResp> resp = new CommonResp();
+        // 我们不需要将密码返回给前端,所有我们的返回实体类中不需要密码
+       UserLoginResp userLoginResp = userService.login(req);
+       resp.setContent(userLoginResp);
         return resp;
     }
 
