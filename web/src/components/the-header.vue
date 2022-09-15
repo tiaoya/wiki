@@ -1,6 +1,6 @@
 <template>
   <a-layout-header class="header">
-    <div class="logo" />
+    <div class="logo">工程知识库</div>
     <a-menu
         theme="dark"
         mode="horizontal"
@@ -21,11 +21,15 @@
       <a-menu-item key="/about">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
+      <a-menu-item key="">
+        <a class="login-menu" @click="showLoginModal">
+          <span>登录</span>
+        </a>
+      </a-menu-item>
 
-      <a class="login-menu" @click="showLoginModal">
-        <span>登录</span>
-      </a>
+
     </a-menu>
+
 
     <a-modal
         title="登录"
@@ -105,18 +109,22 @@ export default defineComponent({
 </script>
 
 <style>
-  .logo {
-    width: 120px;
-    height: 31px;
-    /*background: rgba(255, 255, 255, 0.2);*/
-    /*margin: 16px 28px 16px 0;*/
+  /*.logo {*/
+  /*  width: 120px;*/
+  /*  height: 30px;*/
+  /*  !*background: rgba(255, 255, 255, 0.2);*!*/
+  /*  !*margin: 16px 28px 16px 0;*!*/
+  /*  float: left;*/
+  /*  color: #e8e8e8;*/
+  /*  font-size: 23px;*/
+  /*  line-height: normal;*/
+  /*}*/
+
+
+  .login-menu {
     float: left;
     color: white;
-    font-size: 18px;
+
   }
-    .login-menu {
-      float: right;
-      color: white;
-    }
 
 </style>

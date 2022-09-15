@@ -24,7 +24,7 @@
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
       <div class="welcome" v-show="isShowWelcome">
-        <h1>欢迎使用久远知识库</h1>
+        <h1>欢迎使用工程知识库</h1>
       </div>
       <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :grid="{gutter:20, column: 3 }"  :data-source="ebooks">
         <template #renderItem="{ item }">

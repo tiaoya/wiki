@@ -1,6 +1,6 @@
 <template>
   <a-layout-footer style="text-align: center">
-    久远电子书
+    工程知识库
   </a-layout-footer>
 </template>
 
