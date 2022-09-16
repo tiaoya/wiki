@@ -1,6 +1,6 @@
 <template>
   <a-layout-footer style="text-align: center">
-    工程知识库 {{user.name}}
+    工程知识库 <span v-show="user.id">，欢迎：{{user.name}}</span>
   </a-layout-footer>
 </template>
 
