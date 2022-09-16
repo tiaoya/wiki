@@ -92,6 +92,7 @@ import {Tool} from "@/util/tool";
 export default defineComponent({
   name:'AdminCategory',
   setup() {
+
     const param = ref();
     param.value = {};
     const categorys = ref();
