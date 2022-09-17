@@ -191,6 +191,10 @@ public class DocService {
        }
    }
 
+   // 按电子书分组统计文档数据, 并更新到对应的电子书中
+    public void updateEbookInfo(){
+       docMapperCust.updateEbookInfo();
+    }
 
 
 }
