@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.zhong.wiki.domain.Content;
 import com.zhong.wiki.domain.Doc;
 import com.zhong.wiki.domain.DocExample;
+import com.zhong.wiki.exception.BusinessException;
+import com.zhong.wiki.exception.BusinessExceptionCode;
 import com.zhong.wiki.mapper.ContentMapper;
 import com.zhong.wiki.mapper.DocMapper;
 import com.zhong.wiki.mapper.DocMapperCust;
@@ -13,6 +15,8 @@ import com.zhong.wiki.req.DocSaveReq;
 import com.zhong.wiki.resp.DocQueryResp;
 import com.zhong.wiki.resp.PageResp;
 import com.zhong.wiki.util.CopyUtil;
+import com.zhong.wiki.util.RedisUtil;
+import com.zhong.wiki.util.RequestContext;
 import com.zhong.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,9 @@ public class DocService {
 
     @Autowired
     private SnowFlake snowFlake;
+
+    @Autowired
+    public RedisUtil redisUtil;
 
     public List<DocQueryResp> all(Long ebookId){
         DocExample docExample = new DocExample();
@@ -174,7 +181,14 @@ public class DocService {
    * @description : 点赞
    */
    public void vote(Long id){
-       docMapperCust.increaseVoteCount(id);
+//       docMapperCust.increaseVoteCount(id);
+       // 远程IP+doc.id 作为key,24 小时内不能重复 点赞
+       String ip = RequestContext.getRemoteAddr();
+       if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 5000)) {
+           docMapperCust.increaseVoteCount(id);
+       } else {
+           throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+       }
    }
 
 
