@@ -7,6 +7,7 @@ import com.zhong.wiki.domain.Doc;
 import com.zhong.wiki.domain.DocExample;
 import com.zhong.wiki.mapper.ContentMapper;
 import com.zhong.wiki.mapper.DocMapper;
+import com.zhong.wiki.mapper.DocMapperCust;
 import com.zhong.wiki.req.DocQueryReq;
 import com.zhong.wiki.req.DocSaveReq;
 import com.zhong.wiki.resp.DocQueryResp;
@@ -33,6 +34,9 @@ public class DocService {
 
     @Autowired
     private DocMapper docMapper;
+
+    @Autowired
+    private DocMapperCust docMapperCust;
 
     @Autowired
     private ContentMapper contentMapper;
@@ -106,6 +110,9 @@ public class DocService {
        if (ObjectUtils.isEmpty(req.getId())){
            // 新增, 根据雪花算法生成下一个id
            doc.setId(snowFlake.nextId());
+           // 设置为0 当点击的时候阅读数才会增加, 如果数据库里的是null 那么点击的时候不会增加
+           doc.setViewCount(0);
+           doc.setVoteCount(0);
            docMapper.insert(doc);
 
            // 保存富文本内容 , 向数据库插入内容
@@ -152,6 +159,8 @@ public class DocService {
    */
    public String findContent(Long id){
        Content content = contentMapper.selectByPrimaryKey(id);
+       // 文档阅读数 +1
+       docMapperCust.increaseViewCount(id);
        // 非空判断
        if (ObjectUtils.isEmpty(content)){
            return "";

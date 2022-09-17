@@ -10,7 +10,7 @@
       <a-menu-item key="/">
         <router-link to="/">首页</router-link>
       </a-menu-item>
-      <a-menu-item key="/admin/ebook" :style="user.id? {} : {display:'none'}">
+      <a-menu-item key="/admin/ebook">
         <router-link to="/admin/ebook">电子书管理</router-link>
       </a-menu-item>
       <a-menu-item key="/admin/category" :style="user.id? {} : {display:'none'}">
@@ -29,9 +29,9 @@
             cancel-text="否"
             @confirm="logout()"
         >
-          <apan class="login-menu" v-show="user.id">
+          <a class="login-menu" v-show="user.id">
             <span>退出登录</span>
-          </apan>
+          </a>
         </a-popconfirm>
         <a class="login-menu" v-show="user.id">
           <span>您好：{{user.name}}</span>
@@ -39,8 +39,6 @@
         <a class="login-menu" v-show="!user.id" @click="showLoginModal">
           <span>登录</span>
         </a>
-
-
 
 
     </a-menu>
