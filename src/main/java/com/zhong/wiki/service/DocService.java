@@ -2,6 +2,7 @@ package com.zhong.wiki.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhong.wiki.config.WebSocketConfig;
 import com.zhong.wiki.domain.Content;
 import com.zhong.wiki.domain.Doc;
 import com.zhong.wiki.domain.DocExample;
@@ -18,6 +19,7 @@ import com.zhong.wiki.util.CopyUtil;
 import com.zhong.wiki.util.RedisUtil;
 import com.zhong.wiki.util.RequestContext;
 import com.zhong.wiki.util.SnowFlake;
+import com.zhong.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,10 @@ public class DocService {
 
     @Autowired
     public RedisUtil redisUtil;
+
+    @Autowired
+    public WebSocketServer webSocketServer;
+
 
     public List<DocQueryResp> all(Long ebookId){
         DocExample docExample = new DocExample();
@@ -189,6 +195,10 @@ public class DocService {
        } else {
            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
        }
+
+       // 推送消息
+       Doc docDb = docMapper.selectByPrimaryKey(id);
+       webSocketServer.sendInfo("【"+ docDb.getName()+"】被点赞了!");
    }
 
    // 按电子书分组统计文档数据, 并更新到对应的电子书中
