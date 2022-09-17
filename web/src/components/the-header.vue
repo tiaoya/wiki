@@ -1,6 +1,7 @@
 <template>
   <a-layout-header class="header">
     <div class="logo">工程知识库</div>
+
     <a-menu
         theme="dark"
         mode="horizontal"
@@ -22,16 +23,15 @@
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
 
-
         <a-popconfirm
             title="确认退出登录?"
             ok-text="是"
             cancel-text="否"
             @confirm="logout()"
         >
-          <a class="login-menu" v-show="user.id">
+          <apan class="login-menu" v-show="user.id">
             <span>退出登录</span>
-          </a>
+          </apan>
         </a-popconfirm>
         <a class="login-menu" v-show="user.id">
           <span>您好：{{user.name}}</span>
@@ -39,6 +39,7 @@
         <a class="login-menu" v-show="!user.id" @click="showLoginModal">
           <span>登录</span>
         </a>
+
 
 
 
@@ -60,8 +61,6 @@
         </a-form-item>
       </a-form>
     </a-modal>
-
-
   </a-layout-header>
 </template>
 
@@ -157,7 +156,6 @@ export default defineComponent({
   /*  font-size: 23px;*/
   /*  line-height: normal;*/
   /*}*/
-
 
   .login-menu {
     float: left;
